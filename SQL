@@ -1,8 +1,185 @@
 Query all columns for all American cities in the CITY table with populations larger than 100000. The CountryCode for America is USA.
 The CITY table is described as follows:
 CITY.jpg
-ANS
-SELECT * FROM CITY WHERE COUNTRYCODE = 'USA' AND POPULATION > 100000;
+-SELECT * FROM CITY WHERE COUNTRYCODE = 'USA' AND POPULATION > 100000;
 
 Query the names of all American cities in CITY with populations larger than 120,000. The CountryCode for America is USA.
+-SELECT NAME FROM CITY WHERE COUNTRYCODE = ‘USA’ AND POPULATION > 120000;
+
+Query all columns (attributes) for every row in the CITY table.
+-select * from city;
+
+Query all columns for a city in CITY with the ID 1661.
+-select * from city where id=1661;
+
+Query all attributes of every Japanese city in the CITY table. The COUNTRYCODE for Japan is JPN.
+-SELECT * FROM CITY WHERE COUNTRYCODE = ‘JPN’;
+
+Query the names of all the Japanese cities in the CITY table. The COUNTRYCODE for Japan is JPN.
+-SELECT NAME FROM CITY WHERE COUNTRYCODE = ‘JPN’;
+
+Weather Observation Station 1
+Query a list of CITY and STATE from the STATION table.
+-SELECT CITY, STATE FROM STATION;
+
+Weather Observation Station 3
+Query a list of CITY names from STATION with even ID numbers only. You may print the results in any order but must exclude duplicates from your answer.
+-SELECT DISTINCT CITY FROM STATION WHERE MOD(ID, 2) = 0;
+
+Weather Observation Station 4
+Let N be the number of CITY entries in STATION, and let N’ be the number of distinct CITY names in STATION; query the value of N-N’ from STATION. In other words, find the difference between the total number of CITY entries in the table and the number of distinct CITY entries in the table.
+-SELECT COUNT(CITY) — COUNT(DISTINCT CITY) FROM STATION ;
+
+Weather Observation Station 5
+Query the two cities in STATION with the shortest and longest CITY names, as well as their res
+pective lengths (i.e.: number of characters in the name). If there is more than one smallest or largest city, choose the one that comes first when ordered alphabetically.
+-SELECT * FROM (SELECT DISTINCT city, LENGTH(city) FROM station ORDER BY LENGTH(city) ASC, city ASC) WHERE ROWNUM = 1
+ UNION
+SELECT * FROM (SELECT DISTINCT city, LENGTH(city) FROM station ORDER BY LENGTH(city) DESC, city ASC) WHERE ROWNUM = 1;
+
+Exercise
+We will be using a database with data about some of Pixar's classic movies for most of our exercises. This first exercise will only involve the Movies table, and the default query below currently shows all the properties of each movie. To continue onto the next lesson, alter the query to find the exact information we need for each task.
+Find the title of each film
+Find the director of each film
+Find the title and director of each film
+Find the title and year of each film
+Find all the information about each film
+-SELECT title FROM movies;
+-select director from movies;
+-select title,director from movies;
+-select title,year from movies;
+-select* from movies;
+
+Using the right constraints, find the information we need from the Movies table for each task below
+Find the movie with a row id of 6
+Find the movies released in the years between 2000 and 2010
+Find the movies not released in the years between 2000 and 2010
+Find the first 5 Pixar movies and their release year
+-SELECT id, title FROM movies 
+WHERE id = 6;
+
+-SELECT title, year FROM movies
+WHERE year BETWEEN 2000 AND 2010;
+
+-SELECT title, year FROM movies
+WHERE year < 2000 OR year > 2010;
+
+-SELECT title, year FROM movies
+WHERE year <= 2003;
+
+Here's the definition of a query with a WHERE clause again, go ahead and try and write some queries with the operators above to limit the results to the information we need in the tasks below.
+Find all the Toy Story movies
+Find all the movies directed by John Lasseter
+Find all the movies (and director) not directed by John Lasseter
+Find all the WALL-* movies
+-SELECT title, director FROM movies 
+WHERE title LIKE "Toy Story%";
+
+-SELECT title, director FROM movies 
+WHERE director = "John Lasseter";
+
+-SELECT title, director FROM movies 
+WHERE director != "John Lasseter";
+
+-SELECT * FROM movies 
+WHERE title LIKE "WALL-_";
+
+There are a few concepts in this lesson, but all are pretty straight-forward to apply. To spice things up, we've gone and scrambled the Movies table for you in the exercise to better mimic what kind of data you might see in real life. Try and use the necessary keywords and clauses introduced above in your queries.
+List all directors of Pixar movies (alphabetically), without duplicates
+List the last four Pixar movies released (ordered from most recent to least)
+List the first five Pixar movies sorted alphabetically
+List the next five Pixar movies sorted alphabetically
+-SELECT DISTINCT director FROM movies
+ORDER BY director ASC;
+
+-SELECT title, year FROM movies
+ORDER BY year DESC
+LIMIT 4;
+
+-SELECT title FROM movies
+ORDER BY title ASC
+LIMIT 5;
+
+-SELECT title FROM movies
+ORDER BY title ASC
+LIMIT 5 OFFSET 5;
+
+write some queries to find the information requested in the tasks you know. You may have to use a different combination of clauses in your query for each task. Once you're done, continue onto the next lesson to learn about queries that span multiple tables.
+List all the Canadian cities and their populations
+Order all the cities in the United States by their latitude from north to south
+List all the cities west of Chicago, ordered from west to east
+List the two largest cities in Mexico (by population)
+List the third and fourth largest cities (by population) in the United States and their population
+-SELECT city, population FROM north_american_cities
+WHERE country = "Canada";
+
+-SELECT city, latitude FROM north_american_cities
+WHERE country = "United States"
+ORDER BY latitude DESC;
+
+-SELECT city, longitude FROM north_american_cities
+WHERE longitude < -87.629798
+ORDER BY longitude ASC;
+
+-SELECT city, population FROM north_american_cities
+WHERE country LIKE "Mexico"
+ORDER BY population DESC
+LIMIT 2;
+
+-SELECT city, population FROM north_american_cities
+WHERE country LIKE "United States"
+ORDER BY population DESC
+LIMIT 2 OFFSET 2;
+
+We've added a new table to the Pixar database so that you can try practicing some joins. The BoxOffice table stores information about the ratings and sales of each particular Pixar movie, and the Movie_id column in that table corresponds with the Id column in the Movies table 1-to-1. Try and solve the tasks below using the INNER JOIN introduced above
+Find the domestic and international sales for each movie
+Show the sales numbers for each movie that did better internationally rather than domestically
+List all the movies by their ratings in descending order
+-SELECT title, domestic_sales, international_sales 
+FROM movies
+JOIN boxoffice
+ON movies.id = boxoffice.movie_id;
+
+-SELECT title, domestic_sales, international_sales
+FROM movies
+JOIN boxoffice
+ON movies.id = boxoffice.movie_id
+WHERE international_sales > domestic_sales;
+
+-SELECT title, rating
+FROM movies
+JOIN boxoffice
+ON movies.id = boxoffice.movie_id
+ORDER BY rating DESC;
+
+In this exercise, you are going to be working with a new table which stores fictional data about Employees in the film studio and their assigned office Buildings. Some of the buildings are new, so they don't have any employees in them yet, but we need to find some information about them regardless.
+Since our browser SQL database is somewhat limited, only the LEFT JOIN is supported in the exercise below.
+Find the list of all buildings that have employees
+Find the list of all buildings and their capacity
+List all buildings and the distinct employee roles in each building (including empty buildings)
+-SELECT DISTINCT building FROM employees;
+
+-SELECT * FROM buildings;
+
+-SELECT DISTINCT building_name, role 
+FROM buildings 
+LEFT JOIN employees
+ON building_name = building;
+
+This exercise will be a sort of review of the last few lessons. We're using the same Employees and Buildings table from the last lesson, but we've hired a few more people, who haven't yet been assigned a building.
+Find the name and role of all employees who have not been assigned to a building
+Find the names of the buildings that hold no employees
+-SELECT name, role FROM employees
+WHERE building IS NULL;
+
+-SELECT DISTINCT building_name
+FROM buildings 
+LEFT JOIN employees
+ON building_name = building
+WHERE role IS NULL;
+
+
+
+
+
 
